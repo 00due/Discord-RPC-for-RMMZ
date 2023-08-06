@@ -1,7 +1,7 @@
 # Discord Rich Presence for RPG Maker MZ
 
 This plugin for RPG Maker MZ allows your game to show a rich presence in Discord.
-[![Image](https://cdn.discordapp.com/attachments/728203713893892227/1137797848763728022/image.png)]
+![Image](https://cdn.discordapp.com/attachments/728203713893892227/1137797848763728022/image.png)
 
 # Download
 https://github.com/00due/Discord-RPC-for-RMMZ/archive/refs/heads/main.zip
