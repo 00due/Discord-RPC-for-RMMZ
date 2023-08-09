@@ -204,8 +204,8 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
 
     if (command === 'restore') {
         switch (args[0]) {
-            case 'row1': restoreRows(1);
-            case 'row2': restoreRows(2);
+            case 'row1': restoreRows(1); break;
+            case 'row2': restoreRows(2); break;
         }
     }
 };
