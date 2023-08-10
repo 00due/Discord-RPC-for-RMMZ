@@ -1,8 +1,8 @@
 /*:
- * @plugindesc Discord Rich Presence integration to RPG Maker MZ.
+ * @plugindesc Discord Rich Presence integration to RPG Maker MV.
  * @author ODUE
  * @url http://fsorsat.com/
- * @target MZ
+ * @target MV
  * 
  * @help
  * Initial setup:
@@ -55,7 +55,6 @@
  * @desc Type here your game's application ID
  * @type text
  * 
- * @param
  * 
  * @param Large picture
  * @desc Enter the name of the large picture you want to use.
@@ -75,7 +74,6 @@
  * @type text
  * @default Developed by someone
  * 
- * @param
  * 
  * @param Row 1
  * @desc The first row of text in Discord.
@@ -87,7 +85,6 @@
  * @type text
  * @default Exploring a cool world!
  * 
- * @param
  * 
  * @param Enable button 1
  * @desc Enable the first button
