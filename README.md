@@ -4,7 +4,7 @@ This plugin for RPG Maker MZ and MV allows your game to show a rich presence in 
 ![Image](https://cdn.discordapp.com/attachments/728203713893892227/1137797848763728022/image.png)
 
 # Download
-https://github.com/00due/Discord-RPC-for-RMMZ/archive/refs/heads/mv-beta.zip
+https://github.com/00due/Discord-RPC-for-RMMZ/archive/refs/heads/master.zip
 
 After downloading, extract the `ODUE_discord.js` (or the MV version if you're using RMMV) file into `<your project's folder>/js/plugins`
 
