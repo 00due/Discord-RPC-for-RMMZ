@@ -132,7 +132,7 @@
  * @off Don't show
  */
 
-let discordParameters = PluginManager.parameters('ODUE_discord');
+let discordParameters = PluginManager.parameters('ODUE_discord_MV');
 
 const appId = discordParameters['Discord application ID'];
 if (appId.length < 10) {
