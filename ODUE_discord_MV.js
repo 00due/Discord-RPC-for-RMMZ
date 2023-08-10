@@ -182,13 +182,13 @@ let pluginComm = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
     pluginComm.call(this, command, args);
     if (command === 'replaceRow1') {
-
-        replaceRow1(args[0]);
-
+        if (args[0] != '') {
+            replaceRow1(args[0]);
+        }
     }
 
     if (command === 'replaceRow2') {
-        if (args[0] !== '') {
+        if (args[0] != '') {
             replaceRow2(args[0]);
         }
     }
