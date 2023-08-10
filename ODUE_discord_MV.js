@@ -183,13 +183,15 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
     pluginComm.call(this, command, args);
     if (command === 'replaceRow1') {
         if (args[0] != '') {
-            replaceRow1(args[0]);
+            let combinedArgs = args.join(" ")
+            replaceRow1(combinedArgs);
         }
     }
 
     if (command === 'replaceRow2') {
         if (args[0] != '') {
-            replaceRow2(args[0]);
+            let combinedArgs = args.join(" ")
+            replaceRow1(combinedArgs);
         }
     }
 
