@@ -30,6 +30,11 @@ After creating it, open the Rich Presence --> Art assets tab, and upload the lar
 
 5.Fill the other plugin parameters with anything you want.
 
+# WARNING: After exporting for MV:
+
+Move the folder `node_modules` from `www/` folder to the folder where the executable is. Otherwise it can't find the node module. 
+
+
 
 
 # (MZ) Plugin commands
