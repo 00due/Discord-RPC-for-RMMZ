@@ -147,8 +147,8 @@ const smallPictureText = discordParameters['Small picture text'];
 
 let firstRow = discordParameters['Row 1'];
 let secondRow = discordParameters['Row 2'];
-//let firstRowSaved;
-//let secondRowSaved;
+let firstRowSaved;
+let secondRowSaved;
 
 let playtime;
 if (discordParameters['Show playtime'] === "true") {
@@ -177,7 +177,7 @@ if (discordParameters['Enable button 1'] === "true") {
     }
 }
 
-/*
+
 let pluginComm = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
     pluginComm.call(this, command, args);
@@ -206,7 +206,7 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
         }
     }
 };
-*/
+
 
 const rpc = require("discord-rpc");
 const client = new rpc.Client({ transport: 'ipc' });
@@ -236,7 +236,7 @@ setPresence = function () {
 client.on('ready', () => {
     setPresence();
 })
-/*
+
 saveRows = function () {
     firstRowSaved = firstRow;
     secondRowSaved = secondRow;
@@ -263,4 +263,4 @@ restoreRows = function (rowToRestore) {
             setPresence();
             return;
     }
-}*/
+}
