@@ -132,26 +132,26 @@
  * @off Don't show
  */
 
-let parameters = PluginManager.parameters('ODUE_discord');
+let discordParameters = PluginManager.parameters('ODUE_discord');
 
-const appId = parameters['Discord application ID'];
+const appId = discordParameters['Discord application ID'];
 if (appId.length < 10) {
     console.log("ERROR: Invalid Application ID!");
     process.exit(1);
 }
 
-const bigPicture = parameters['Large picture'];
-const bigPictureText = parameters['Large picture text'];
-const smallPicture = parameters['Small picture'];
-const smallPictureText = parameters['Small picture text'];
+const bigPicture = discordParameters['Large picture'];
+const bigPictureText = discordParameters['Large picture text'];
+const smallPicture = discordParameters['Small picture'];
+const smallPictureText = discordParameters['Small picture text'];
 
-let firstRow = parameters['Row 1'];
-let secondRow = parameters['Row 2'];
+let firstRow = discordParameters['Row 1'];
+let secondRow = discordParameters['Row 2'];
 let firstRowSaved;
 let secondRowSaved;
 
 let playtime;
-if (parameters['Show playtime'] === "true") {
+if (discordParameters['Show playtime'] === "true") {
     playtime = Date.now();
 }
 
@@ -161,15 +161,15 @@ let button2Url;
 let button2Text;
 let buttons;
 
-if (parameters['Enable button 1'] === "true") {
-    button1Text = parameters['Button 1 text'];
-    button1Url = parameters['Button 1 URL'];
+if (discordParameters['Enable button 1'] === "true") {
+    button1Text = discordParameters['Button 1 text'];
+    button1Url = discordParameters['Button 1 URL'];
     buttons = [
         { label: button1Text, url: button1Url },
     ];
-    if (parameters['Enable button 2'] === "true") {
-        button2Text = parameters['Button 2 text'];
-        button2Url = parameters['Button 2 URL'];
+    if (discordParameters['Enable button 2'] === "true") {
+        button2Text = discordParameters['Button 2 text'];
+        button2Url = discordParameters['Button 2 URL'];
         buttons = [
             { label: button1Text, url: button1Url },
             { label: button2Text, url: button2Url },
