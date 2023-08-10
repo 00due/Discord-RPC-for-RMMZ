@@ -1,18 +1,18 @@
-# Discord Rich Presence for RPG Maker MZ
+# Discord Rich Presence for RPG Maker MZ / MV
 
-This plugin for RPG Maker MZ allows your game to show a rich presence in Discord.
+This plugin for RPG Maker MZ and MV allows your game to show a rich presence in Discord.
 ![Image](https://cdn.discordapp.com/attachments/728203713893892227/1137797848763728022/image.png)
 
 # Download
-https://github.com/00due/Discord-RPC-for-RMMZ/archive/refs/heads/master.zip
+https://github.com/00due/Discord-RPC-for-RMMZ/archive/refs/heads/mv-beta.zip
 
-After downloading, extract the `ODUE_discord.js` file into `<your project's folder>/js/plugins`
+After downloading, extract the `ODUE_discord.js` (or the MV version if you're using RMMV) file into `<your project's folder>/js/plugins`
 
 # Initial setup:
 
 0.If you don't have Node.js installed, install it from https://nodejs.org/en/download
 
-1.Open the folder of your game (where you have your game.rmmzproject in) and open CMD or powershell there.
+1.Open the folder of your game (where you have your game.rmmzproject / Game.rpgproject in) and open CMD or powershell there.
 
 2.Run the command `npm install discord-rpc`
 
@@ -32,7 +32,7 @@ After creating it, open the Rich Presence --> Art assets tab, and upload the lar
 
 
 
-# Changing the details after the initial setup:
+# (MZ) Plugin commands
 
 1. Open Plugin commands --> ODUE_discord
 
@@ -41,6 +41,30 @@ After creating it, open the Rich Presence --> Art assets tab, and upload the lar
 3. Type the new value of it.
 
 You can also save the current values for later use.
+
+
+# (MV) Plugin commands
+
+`replaceRow1 <text to replace with>`   - Replaces row 1
+
+`replaceRow2 <text to replace with>`   - Replaces row 2
+
+`save rows`   - Save both rows for later use
+
+`restore <row1 / row2>`   – Restores a saved row
+
+
+Examples:
+
+// On battle start
+
+`save rows`
+
+`replaceRow1 Fighting a monster`
+
+// On battle end
+
+`restore row1`
 
 # Terms of use:
 
