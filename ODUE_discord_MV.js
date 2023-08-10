@@ -191,7 +191,7 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
     if (command === 'replaceRow2') {
         if (args[0] != '') {
             let combinedArgs = args.join(" ")
-            replaceRow1(combinedArgs);
+            replaceRow2(combinedArgs);
         }
     }
 
@@ -242,7 +242,7 @@ client.on('ready', () => {
 saveRows = function () {
     firstRowSaved = firstRow;
     secondRowSaved = secondRow;
-}
+};
 
 replaceRow1 = function (newRow) {
     firstRow = newRow;
@@ -265,4 +265,4 @@ restoreRows = function (rowToRestore) {
             setPresence();
             return;
     }
-}
+};
