@@ -27,8 +27,8 @@
  * 
  * Plugin commands:
  *
- * replaceRow1 <text to replace with>   - Replaces row 1
- * replaceRow2 <text to replace with>   - Replaces row 2
+ * replaceRow1 <text to replace with>   - Replaces row 1 (maximum 128 characters)
+ * replaceRow2 <text to replace with>   - Replaces row 2 (maximum 128 characters)
  * save rows   - Save both rows for later use
  * restore <row1 / row2>   – Restores a saved row
  *
@@ -55,13 +55,12 @@
  * @desc Type here your game's application ID
  * @type text
  * 
- * 
  * @param Large picture
  * @desc Enter the name of the large picture you want to use.
  * @type text
  * 
  * @param Large picture text
- * @desc Enter the text when hovering the large picture with your cursor.
+ * @desc Enter the text when hovering the large picture with your cursor. (Max 128 characters)
  * @type text
  * @default Playing a game
  * 
@@ -70,21 +69,19 @@
  * @type text
  * 
  * @param Small picture text
- * @desc Enter the text when hovering the small picture with your cursor.
+ * @desc Enter the text when hovering the small picture with your cursor. (Max 128 characters)
  * @type text
  * @default Developed by someone
  * 
- * 
  * @param Row 1
- * @desc The first row of text in Discord.
+ * @desc The first row of text in Discord. (Max 128 characters)
  * @type text
  * @default Playing a cool game!
  * 
  * @param Row 2
- * @desc The second row of text in Discord.
+ * @desc The second row of text in Discord. (Max 128 characters)
  * @type text
  * @default Exploring a cool world!
- * 
  * 
  * @param Enable button 1
  * @desc Enable the first button
@@ -101,7 +98,7 @@
  * 
  * @param Button 1 text
  * @parent Enable button 1
- * @desc The text on the button.
+ * @desc The text on the button. (Max 32 characters)
  * @type text
  * @default Download this game!
  * 
@@ -120,7 +117,7 @@
  * 
  * @param Button 2 text
  * @parent Enable button 2
- * @desc The text on the button.
+ * @desc The text on the button. (Max 32 characters)
  * @type text
  * @default Visit the game's website!
  * 
@@ -179,6 +176,14 @@ if (discordParameters['Enable button 1'] === "true") {
     }
 }
 
+//Warnings
+
+if (firstRow.length > 128) console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
+if (secondRow.length > 128) console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
+if (button1Text.length > 32) console.error("DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled.")
+if (button2Text.length > 32) console.error("DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled.")
+if (bigPictureText.length > 128) console.error("DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled.")
+if (smallPictureText.length > 128) console.error("DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled.")
 
 let pluginComm = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
@@ -247,13 +252,19 @@ saveRows = function () {
 };
 
 replaceRow1 = function (newRow) {
-    firstRow = newRow;
-    setPresence();
+    if (newRow.length <= 128) {
+        firstRow = newRow;
+        setPresence();
+    }
+    else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
 };
 
 replaceRow2 = function (newRow) {
-    secondRow = newRow;
-    setPresence();
+    if (newRow.length <= 128) {
+        secondRow = newRow;
+        setPresence();
+    }
+    else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has been disabled.")
 };
 
 restoreRows = function (rowToRestore) {

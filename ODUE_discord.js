@@ -59,7 +59,7 @@
  * @type text
  * 
  * @param Large picture text
- * @desc Enter the text when hovering the large picture with your cursor.
+ * @desc Enter the text when hovering the large picture with your cursor. (Max 128 characters)
  * @type text
  * @default Playing a game
  * 
@@ -68,19 +68,19 @@
  * @type text
  * 
  * @param Small picture text
- * @desc Enter the text when hovering the small picture with your cursor.
+ * @desc Enter the text when hovering the small picture with your cursor. (Max 128 characters)
  * @type text
  * @default Developed by someone
  * 
  * @param
  * 
  * @param Row 1
- * @desc The first row of text in Discord.
+ * @desc The first row of text in Discord. (Max 128 characters)
  * @type text
  * @default Playing a cool game!
  * 
  * @param Row 2
- * @desc The second row of text in Discord.
+ * @desc The second row of text in Discord. (Max 128 characters)
  * @type text
  * @default Exploring a cool world!
  * 
@@ -101,7 +101,7 @@
  * 
  * @param Button 1 text
  * @parent Enable button 1
- * @desc The text on the button.
+ * @desc The text on the button. (Max 32 characters)
  * @type text
  * @default Download this game!
  * 
@@ -120,7 +120,7 @@
  * 
  * @param Button 2 text
  * @parent Enable button 2
- * @desc The text on the button.
+ * @desc The text on the button. (Max 32 characters)
  * @type text
  * @default Visit the game's website!
  * 
@@ -138,7 +138,7 @@
  * 
  * @arg row1
  * @text New value
- * @desc Edit the first row of Discord status
+ * @desc Max 128 characters
  * @type text
  *
  * @command Edit row 2
@@ -146,7 +146,7 @@
  *
  * @arg row2
  * @text New value
- * @desc Edit the second row of Discord status
+ * @desc Max 128 characters
  * @type text
  *
  * 
@@ -176,8 +176,7 @@ let parameters = PluginManager.parameters('ODUE_discord');
 
 const appId = parameters['Discord application ID'];
 if (appId.length < 10) {
-    console.log("ERROR: Invalid Application ID!");
-    process.exit(1);
+    console.error("DISCORD ERROR: Invalid Application ID!");
 }
 
 const bigPicture = parameters['Large picture'];
@@ -217,6 +216,14 @@ if (parameters['Enable button 1'] === "true") {
     }
 }
 
+//Warnings
+
+if (firstRow.length > 128) console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
+if (secondRow.length > 128) console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
+if (button1Text.length > 32) console.error("DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled.")
+if (button2Text.length > 32) console.error("DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled.")
+if (bigPictureText.length > 128) console.error("DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled.")
+if (smallPictureText.length > 128) console.error("DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled.")
 
 const rpc = require("discord-rpc");
 const client = new rpc.Client({ transport: 'ipc' });
@@ -253,13 +260,20 @@ PluginManager.registerCommand("ODUE_discord", 'Save values', () => {
 })
 
 PluginManager.registerCommand("ODUE_discord", 'Edit row 1', args => {
-    firstRow = String(args.row1);
-    setPresence();
+    if (args.row1.length <= 128) {
+        firstRow = String(args.row1);
+        setPresence();
+    }
+    else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
 });
 
 PluginManager.registerCommand("ODUE_discord", 'Edit row 2', args => {
-    secondRow = String(args.row2);
-    setPresence();
+    if (args.row2.length <= 128) {
+        secondRow = String(args.row2);
+        setPresence();
+    }
+    else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has not been updated.")
+    
 });
 
 PluginManager.registerCommand("ODUE_discord", 'Restore values', args => {
