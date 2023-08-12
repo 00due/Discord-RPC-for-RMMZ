@@ -4,6 +4,9 @@ This plugin for RPG Maker MZ and MV allows your game to show a rich presence in 
 ![Image](https://cdn.discordapp.com/attachments/728203713893892227/1137797848763728022/image.png)
 
 # Download
+
+Requirements: You have to use nwjs version 0.49.2 or higher. If you don't know how to update nwjs, check [this awesome guide!](https://forums.rpgmakerweb.com/index.php?threads/how-to-update-nw-js-to-dramatically-improve-game-performance.131620/)
+
 https://github.com/00due/Discord-RPC-for-RMMZ/archive/refs/heads/master.zip
 
 After downloading, extract the `ODUE_discord.js` (or the MV version if you're using RMMV) file into `<your project's folder>/js/plugins`
