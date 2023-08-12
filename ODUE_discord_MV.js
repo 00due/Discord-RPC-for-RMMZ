@@ -161,6 +161,8 @@ let button2Url;
 let button2Text;
 let buttons;
 
+let combinedArgs;
+
 if (discordParameters['Enable button 1'] === "true") {
     button1Text = discordParameters['Button 1 text'];
     button1Url = discordParameters['Button 1 URL'];
@@ -183,14 +185,14 @@ Game_Interpreter.prototype.pluginCommand = function(command, args) {
     pluginComm.call(this, command, args);
     if (command === 'replaceRow1') {
         if (args[0] != '') {
-            let combinedArgs = args.join(" ")
+            combinedArgs = args.join(" ")
             replaceRow1(combinedArgs);
         }
     }
 
     if (command === 'replaceRow2') {
         if (args[0] != '') {
-            let combinedArgs = args.join(" ")
+            combinedArgs = args.join(" ")
             replaceRow2(combinedArgs);
         }
     }
