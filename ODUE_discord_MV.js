@@ -1,7 +1,7 @@
 /*:
- * @plugindesc Discord Rich Presence integration to RPG Maker MV.
+ * @plugindesc (Ver1.1) Discord Rich Presence integration to RPG Maker MV.
  * @author ODUE
- * @url http://fsorsat.com/
+ * @url https://github.com/00due/Discord-RPC-for-RMMZ
  * @target MV
  * 
  * @help
@@ -22,22 +22,28 @@
  * 4. Copy the Application ID from the 'General information' tab, and paste it into the 'Discord application ID' on this plugin.
  * 
  * 5. Fill the other plugin parameters with anything you want.
- * 
+ * REQUIRED TO FILL:
+ * Application ID, Large picture, Large picture text, Row 1
  * 
  * 
  * Plugin commands:
  *
- * replaceRow1 <text to replace with>   - Replaces row 1 (maximum 128 characters)
- * replaceRow2 <text to replace with>   - Replaces row 2 (maximum 128 characters)
- * save rows   - Save both rows for later use
- * restore <row1 / row2>   – Restores a saved row
+ * rpc_replaceRow1 <text to replace with>   - Replaces row 1 (maximum 128 characters)
+ * rpc_replaceRow2 <text to replace with>   - Replaces row 2 (maximum 128 characters)
+ * rpc_saveRows   - Save both rows for later use
+ * rpc_restore <row1 / row2>   – Restores a saved row
+ * rpc_enable row2   - Enables the second row
+ * rpc_disable row2   - Disables the second row
  *
  * Examples:
  * // On battle start
- * save rows
- * replaceRow1 Fighting a monster
+ * rpc_saveRows
+ * rpc_replaceRow1 Fighting a monster
+ * rpc_disable row2
+ * 
  * // On battle end
- * restore row1
+ * rpc_restore row1
+ * rpc_enable row2
  *
  *
  * Terms of use:
@@ -55,6 +61,7 @@
  * @desc Type here your game's application ID
  * @type text
  * 
+ * 
  * @param Large picture
  * @desc Enter the name of the large picture you want to use.
  * @type text
@@ -64,24 +71,43 @@
  * @type text
  * @default Playing a game
  * 
+ * @param Enable small picture
+ * @desc Enables the small picture shown in the rich presence.
+ * @type boolean
+ * @default false
+ * @on yes
+ * @off no
+ * 
  * @param Small picture
  * @desc Enter the name of the small picture you want to use.
+ * @parent Enable small picture
  * @type text
  * 
  * @param Small picture text
  * @desc Enter the text when hovering the small picture with your cursor. (Max 128 characters)
+ * @parent Enable small picture
  * @type text
  * @default Developed by someone
+ * 
  * 
  * @param Row 1
  * @desc The first row of text in Discord. (Max 128 characters)
  * @type text
  * @default Playing a cool game!
  * 
+ * @param Show row 2
+ * @desc Disable if you don't want the second row to be visible.
+ * @type boolean
+ * @default true
+ * @on yes
+ * @off no
+ * 
  * @param Row 2
  * @desc The second row of text in Discord. (Max 128 characters)
+ * @parent Show row 2
  * @type text
  * @default Exploring a cool world!
+ * 
  * 
  * @param Enable button 1
  * @desc Enable the first button
@@ -131,24 +157,31 @@
 
 let discordParameters = PluginManager.parameters('ODUE_discord_MV');
 
-const appId = discordParameters['Discord application ID'];
+const appId = parameters['Discord application ID'];
 if (appId.length < 10) {
-    console.log("ERROR: Invalid Application ID!");
-    process.exit(1);
+    console.error("DISCORD ERROR: Invalid Application ID!");
 }
 
-const bigPicture = discordParameters['Large picture'];
-const bigPictureText = discordParameters['Large picture text'];
-const smallPicture = discordParameters['Small picture'];
-const smallPictureText = discordParameters['Small picture text'];
+const bigPicture = parameters['Large picture'];
+const bigPictureText = parameters['Large picture text'];
+let smallPictureEnabled;
+smallPictureEnabled = parameters['Enable small picture'] === "true";
 
-let firstRow = discordParameters['Row 1'];
-let secondRow = discordParameters['Row 2'];
+const smallPicture = parameters['Small picture'];
+const smallPictureText = parameters['Small picture text'];
+
+
+let firstRow = parameters['Row 1'];
+let secondRow = parameters['Row 2'];
 let firstRowSaved;
 let secondRowSaved;
 
+let row2Enabled;
+
+row2Enabled = parameters['Show row 2'] === "true";
+
 let playtime;
-if (discordParameters['Show playtime'] === "true") {
+if (parameters['Show playtime'] === "true") {
     playtime = Date.now();
 }
 
@@ -156,63 +189,73 @@ let button1Url;
 let button1Text;
 let button2Url;
 let button2Text;
-let buttons;
 
-let combinedArgs;
+let buttons = getButtons(parameters);
 
-if (discordParameters['Enable button 1'] === "true") {
-    button1Text = discordParameters['Button 1 text'];
-    button1Url = discordParameters['Button 1 URL'];
-    buttons = [
-        { label: button1Text, url: button1Url },
-    ];
-    if (discordParameters['Enable button 2'] === "true") {
-        button2Text = discordParameters['Button 2 text'];
-        button2Url = discordParameters['Button 2 URL'];
-        buttons = [
-            { label: button1Text, url: button1Url },
-            { label: button2Text, url: button2Url },
-        ];
+function getButtons(parameters) {
+    if (parameters['Enable button 1'] === "true") {
+        button1Text = parameters['Button 1 text'];
+        button1Url = parameters['Button 1 URL'];
+        let buttonArr = [{ label: button1Text, url: button1Url }];
+        if (parameters['Enable button 2'] === "true") {
+            button2Text = parameters['Button 2 text'];
+            button2Url = parameters['Button 2 URL'];
+            buttonArr.push({ label: button2Text, url: button2Url });
+        }
+        return buttonArr;
     }
 }
 
 //Warnings
 
-if (firstRow.length > 128) console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
-if (secondRow.length > 128) console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
-if (button1Text.length > 32) console.error("DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled.")
-if (button2Text.length > 32) console.error("DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled.")
-if (bigPictureText.length > 128) console.error("DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled.")
-if (smallPictureText.length > 128) console.error("DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled.")
+function checkStringLength(text, maxLength, errorMessage) {
+    if (text.length > maxLength) console.error(errorMessage)
+}
+try {
+    checkStringLength(firstRow, 128, "DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(secondRow, 128, "DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(button1Text, 32, "DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(button2Text, 32, "DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(bigPictureText, 128, "DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(smallPictureText, 128, "DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled.");
+}
+catch (TypeError) { console.warn("WARNING: Length check failed. Don't worry, this shouldn't matter.") }
+
 
 let pluginComm = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
     pluginComm.call(this, command, args);
-    if (command === 'replaceRow1') {
+    if (command === 'rpc_replaceRow1') {
         if (args[0] != '') {
             combinedArgs = args.join(" ")
             replaceRow1(combinedArgs);
         }
     }
 
-    if (command === 'replaceRow2') {
+    if (command === 'rpc_replaceRow2') {
         if (args[0] != '') {
             combinedArgs = args.join(" ")
             replaceRow2(combinedArgs);
         }
     }
 
-    if (command === 'save') {
-        if (args[0] === 'rows') {
+    if (command === 'rpc_saveRows') {
             saveRows();
-        }
     }
 
-    if (command === 'restore') {
+    if (command === 'rpc_restore') {
         switch (args[0]) {
             case 'row1': restoreRows(1); break;
             case 'row2': restoreRows(2); break;
         }
+    }
+    if (command === 'rpc_enable') {
+        if (args[0] === "row2") enableSecondRow();
+        
+    }
+    if (command === 'rpc_disable') {
+        if (args[0] === "row2") disableSecondRow();
+        
     }
 };
 
@@ -221,30 +264,39 @@ const rpc = require("discord-rpc");
 const client = new rpc.Client({ transport: 'ipc' });
 client.login({ clientId: appId });
 
-setPresence = function () {
-    client.request('SET_ACTIVITY', {
-        pid: process.pid,
-        activity: {
-            details: firstRow,
-            state: secondRow,
-            timestamps: {
-                start: playtime,
-
-            },
-            assets: {
-                large_image: bigPicture,
-                large_text: bigPictureText,
+const createActivityObject = (details, state) => ({
+    pid: process.pid,
+    activity: {
+        details,
+        ...(state && {state}),
+        timestamps: { start: playtime },
+        assets: {
+            large_image: bigPicture,
+            large_text: bigPictureText,
+            ...(smallPictureEnabled && {
                 small_image: smallPicture,
-                small_text: smallPictureText,
-            },
-            buttons: buttons
-        }
-    })
-}
+                small_text: smallPictureText
+            }),
+        },
+        buttons,
+    }
+});
+
+let setPresence = function () {
+    let activity = createActivityObject(firstRow, secondRow);
+    client.request('SET_ACTIVITY', activity);
+};
+
+let deleteRow2 = function () {
+    let activity = createActivityObject(firstRow);
+    client.request('SET_ACTIVITY', activity);
+};
+
 
 client.on('ready', () => {
-    setPresence();
-})
+    if (row2Enabled) setPresence();
+    else deleteRow2();
+});
 
 saveRows = function () {
     firstRowSaved = firstRow;
@@ -278,4 +330,14 @@ restoreRows = function (rowToRestore) {
             setPresence();
             return;
     }
+};
+
+disableSecondRow = function() {
+    row2Enabled = false;
+    deleteRow2();
+};
+
+enableSecondRow = function() {
+    row2Enabled = true;
+    setPresence();
 };

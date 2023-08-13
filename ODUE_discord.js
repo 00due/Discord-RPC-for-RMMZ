@@ -1,7 +1,7 @@
 /*:
- * @plugindesc Discord Rich Presence integration to RPG Maker MZ.
+ * @plugindesc (Ver1.1) Discord Rich Presence integration to RPG Maker MZ.
  * @author ODUE
- * @url http://fsorsat.com/
+ * @url https://github.com/00due/Discord-RPC-for-RMMZ
  * @target MZ
  * 
  * @help
@@ -22,6 +22,8 @@
  * 4. Copy the Application ID from the 'General information' tab, and paste it into the 'Discord application ID' on this plugin.
  * 
  * 5. Fill the other plugin parameters with anything you want.
+ * REQUIRED TO FILL:
+ * Application ID, Large picture, Large picture text, Row 1
  * 
  * 
  * 
@@ -34,6 +36,7 @@
  * 3. Type the new value of it.
  *
  * You can also save the current values for later use.
+ * As of ver1.1, deleting the second row is also possible.
  *
  *
  *
@@ -63,12 +66,21 @@
  * @type text
  * @default Playing a game
  * 
+ * @param Enable small picture
+ * @desc Enables the small picture shown in the rich presence.
+ * @type boolean
+ * @default false
+ * @on yes
+ * @off no
+ * 
  * @param Small picture
  * @desc Enter the name of the small picture you want to use.
+ * @parent Enable small picture
  * @type text
  * 
  * @param Small picture text
  * @desc Enter the text when hovering the small picture with your cursor. (Max 128 characters)
+ * @parent Enable small picture
  * @type text
  * @default Developed by someone
  * 
@@ -79,8 +91,16 @@
  * @type text
  * @default Playing a cool game!
  * 
+ * @param Show row 2
+ * @desc Disable if you don't want the second row to be visible.
+ * @type boolean
+ * @default true
+ * @on yes
+ * @off no
+ * 
  * @param Row 2
  * @desc The second row of text in Discord. (Max 128 characters)
+ * @parent Show row 2
  * @type text
  * @default Exploring a cool world!
  * 
@@ -131,8 +151,7 @@
  * @on Show
  * @off Don't show
  *
- *
- *
+ * 
  * @command Edit row 1
  * @desc Edit the row 1 of Discord status
  * 
@@ -148,8 +167,13 @@
  * @text New value
  * @desc Max 128 characters
  * @type text
- *
  * 
+ * @command Disable row 2
+ * @desc Disable the row 2 of Discord status
+ * 
+ * @command Enable row 2
+ * @desc Enable the row 2 of Discord status
+ *
  * @command Save values
  * @desc Saves the current values of row 1 and 2
  *
@@ -181,13 +205,21 @@ if (appId.length < 10) {
 
 const bigPicture = parameters['Large picture'];
 const bigPictureText = parameters['Large picture text'];
+let smallPictureEnabled;
+smallPictureEnabled = parameters['Enable small picture'] === "true";
+
 const smallPicture = parameters['Small picture'];
 const smallPictureText = parameters['Small picture text'];
+
 
 let firstRow = parameters['Row 1'];
 let secondRow = parameters['Row 2'];
 let firstRowSaved;
 let secondRowSaved;
+
+let row2Enabled;
+
+row2Enabled = parameters['Show row 2'] === "true";
 
 let playtime;
 if (parameters['Show playtime'] === "true") {
@@ -198,71 +230,86 @@ let button1Url;
 let button1Text;
 let button2Url;
 let button2Text;
-let buttons;
 
-if (parameters['Enable button 1'] === "true") {
-    button1Text = parameters['Button 1 text'];
-    button1Url = parameters['Button 1 URL'];
-    buttons = [
-        { label: button1Text, url: button1Url },
-    ];
-    if (parameters['Enable button 2'] === "true") {
-        button2Text = parameters['Button 2 text'];
-        button2Url = parameters['Button 2 URL'];
-        buttons = [
-            { label: button1Text, url: button1Url },
-            { label: button2Text, url: button2Url },
-        ];
+let buttons = getButtons(parameters);
+
+function getButtons(parameters) {
+    if (parameters['Enable button 1'] === "true") {
+        button1Text = parameters['Button 1 text'];
+        button1Url = parameters['Button 1 URL'];
+        let buttonArr = [{ label: button1Text, url: button1Url }];
+        if (parameters['Enable button 2'] === "true") {
+            button2Text = parameters['Button 2 text'];
+            button2Url = parameters['Button 2 URL'];
+            buttonArr.push({ label: button2Text, url: button2Url });
+        }
+        return buttonArr;
     }
 }
 
 //Warnings
 
-if (firstRow.length > 128) console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
-if (secondRow.length > 128) console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
-if (button1Text.length > 32) console.error("DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled.")
-if (button2Text.length > 32) console.error("DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled.")
-if (bigPictureText.length > 128) console.error("DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled.")
-if (smallPictureText.length > 128) console.error("DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled.")
+function checkStringLength(text, maxLength, errorMessage) {
+    if (text.length > maxLength) console.error(errorMessage)
+}
+try {
+    checkStringLength(firstRow, 128, "DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(secondRow, 128, "DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(button1Text, 32, "DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(button2Text, 32, "DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(bigPictureText, 128, "DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled.");
+    checkStringLength(smallPictureText, 128, "DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled.");
+}
+catch (TypeError) { console.warn("WARNING: Length check failed. Don't worry, this shouldn't matter.") }
 
 const rpc = require("discord-rpc");
 const client = new rpc.Client({ transport: 'ipc' });
 client.login({ clientId: appId });
 
-setPresence = function () {
-    client.request('SET_ACTIVITY', {
-        pid: process.pid,
-        activity: {
-            details: firstRow,
-            state: secondRow,
-            timestamps: {
-                start: playtime,
-
-            },
-            assets: {
-                large_image: bigPicture,
-                large_text: bigPictureText,
+const createActivityObject = (details, state) => ({
+    pid: process.pid,
+    activity: {
+        details,
+        ...(state && {state}),
+        timestamps: { start: playtime },
+        assets: {
+            large_image: bigPicture,
+            large_text: bigPictureText,
+            ...(smallPictureEnabled && {
                 small_image: smallPicture,
-                small_text: smallPictureText,
-            },
-            buttons: buttons
-        }
-    })
-}
+                small_text: smallPictureText
+            }),
+        },
+        buttons,
+    }
+});
+
+let setPresence = function () {
+    let activity = createActivityObject(firstRow, secondRow);
+    client.request('SET_ACTIVITY', activity);
+};
+
+let deleteRow2 = function () {
+    let activity = createActivityObject(firstRow);
+    client.request('SET_ACTIVITY', activity);
+};
+
 
 client.on('ready', () => {
-    setPresence();
-})
+    if (row2Enabled) setPresence();
+    else deleteRow2();
+});
 
 PluginManager.registerCommand("ODUE_discord", 'Save values', () => {
     firstRowSaved = firstRow;
     secondRowSaved = secondRow;
-})
+});
 
 PluginManager.registerCommand("ODUE_discord", 'Edit row 1', args => {
     if (args.row1.length <= 128) {
         firstRow = String(args.row1);
-        setPresence();
+        if (row2Enabled) setPresence();
+        else deleteRow2();
     }
     else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
 });
@@ -270,7 +317,8 @@ PluginManager.registerCommand("ODUE_discord", 'Edit row 1', args => {
 PluginManager.registerCommand("ODUE_discord", 'Edit row 2', args => {
     if (args.row2.length <= 128) {
         secondRow = String(args.row2);
-        setPresence();
+        if (row2Enabled) setPresence();
+        else deleteRow2();
     }
     else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has not been updated.")
     
@@ -279,5 +327,17 @@ PluginManager.registerCommand("ODUE_discord", 'Edit row 2', args => {
 PluginManager.registerCommand("ODUE_discord", 'Restore values', args => {
     if (args.restoreRow1 === "true" && firstRowSaved.length !== 0) firstRow = firstRowSaved;
     if (args.restoreRow2 === "true" && secondRowSaved.length !== 0) secondRow = secondRowSaved;
+
+    if (row2Enabled) setPresence();
+    else deleteRow2();
+});
+
+PluginManager.registerCommand("ODUE_discord", 'Disable row 2', () => {
+    row2Enabled = false;
+    deleteRow2();
+});
+
+PluginManager.registerCommand("ODUE_discord", 'Enable row 2', () => {
+    row2Enabled = true;
     setPresence();
-})
+});
