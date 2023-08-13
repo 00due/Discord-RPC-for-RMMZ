@@ -9,6 +9,8 @@ Requirements: You have to use nwjs version 0.49.2 or higher. If you don't know h
 
 https://github.com/00due/Discord-RPC-for-RMMZ/archive/refs/heads/master.zip
 
+Current version: 1.1
+
 After downloading, extract the `ODUE_discord.js` (or the MV version if you're using RMMV) file into `<your project's folder>/js/plugins`
 
 # Initial setup:
@@ -33,6 +35,10 @@ After creating it, open the Rich Presence --> Art assets tab, and upload the lar
 
 5.Fill the other plugin parameters with anything you want.
 
+REQUIRED TO FILL:
+
+Application ID, Large picture, Large picture text, Row 1
+
 # WARNING: After exporting for MV:
 
 Move the folder `node_modules` from `www/` folder to the folder where the executable is. Otherwise it can't find the node module. 
@@ -50,29 +56,29 @@ Move the folder `node_modules` from `www/` folder to the folder where the execut
 
 You can also save the current values for later use.
 
+As of ver1.1, deleting the second row is also possible.
+
 
 # (MV) Plugin commands
 
-`replaceRow1 <text to replace with>`   - Replaces row 1
-
-`replaceRow2 <text to replace with>`   - Replaces row 2
-
-`save rows`   - Save both rows for later use
-
-`restore <row1 / row2>`   – Restores a saved row
-
+`rpc_replaceRow1 <text to replace with>`   - Replaces row 1 (maximum 128 characters)
+`rpc_replaceRow2 <text to replace with>`   - Replaces row 2 (maximum 128 characters)
+`rpc_saveRows`   - Save both rows for later use
+`rpc_restore <row1 / row2>`   – Restores a saved row
+`rpc_enable row2?`  - Enables the second row
+`rpc_disable row2`   - Disables the second row
 
 Examples:
-
+```
 // On battle start
-
-`save rows`
-
-`replaceRow1 Fighting a monster`
+rpc_saveRows
+rpc_replaceRow1 Fighting a monster
+rpc_disable row2
 
 // On battle end
-
-`restore row1`
+rpc_restore row1
+rpc_enable row2
+```
 
 # Terms of use:
 
