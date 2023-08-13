@@ -65,7 +65,7 @@ As of ver1.1, deleting the second row is also possible.
 `rpc_replaceRow2 <text to replace with>`   - Replaces row 2 (maximum 128 characters)
 `rpc_saveRows`   - Save both rows for later use
 `rpc_restore <row1 / row2>`   – Restores a saved row
-`rpc_enable row2?`  - Enables the second row
+`rpc_enable row2`  - Enables the second row
 `rpc_disable row2`   - Disables the second row
 
 Examples:
