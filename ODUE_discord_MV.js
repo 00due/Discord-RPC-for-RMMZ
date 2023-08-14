@@ -211,15 +211,24 @@ function getButtons(parameters) {
 function checkStringLength(text, maxLength, errorMessage) {
     if (text.length > maxLength) console.error(errorMessage)
 }
-try {
-    checkStringLength(firstRow, 128, "DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.");
-    checkStringLength(secondRow, 128, "DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has been disabled.");
-    checkStringLength(button1Text, 32, "DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled.");
-    checkStringLength(button2Text, 32, "DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled.");
-    checkStringLength(bigPictureText, 128, "DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled.");
-    checkStringLength(smallPictureText, 128, "DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled.");
+
+let stringsToCheck = [
+    {string: firstRow, length: 128, error: "DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled."},
+    {string: secondRow, length: 128, error: "DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has been disabled."},
+    {string: button1Text, length: 32, error: "DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled."},
+    {string: button2Text, length: 32, error: "DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled."},
+    {string: bigPictureText, length: 128, error: "DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled."},
+    {string: smallPictureText, length: 128, error: "DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled."}
+]
+
+for (let {string, length, error} of stringsToCheck) {
+    try {
+        checkStringLength(string, length, error);
+    }
+    catch (TypeError) {
+        console.warn("WARNING: Length check failed. Don't worry, this shouldn't matter.");
+    }
 }
-catch (TypeError) { console.warn("WARNING: Length check failed. Don't worry, this shouldn't matter.") }
 
 
 let pluginComm = Game_Interpreter.prototype.pluginCommand;
@@ -296,6 +305,7 @@ let deleteRow2 = function () {
 client.on('ready', () => {
     if (row2Enabled) setPresence();
     else deleteRow2();
+    console.log("RPC enabled")
 });
 
 saveRows = function () {
