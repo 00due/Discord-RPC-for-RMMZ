@@ -9,9 +9,13 @@ Requirements: You have to use nwjs version 0.49.2 or higher. If you don't know h
 
 https://github.com/00due/Discord-RPC-for-RMMZ/archive/refs/heads/master.zip
 
-Current version: 1.1
+Current version: 1.2
 
 After downloading, extract the `ODUE_discord.js` (or the MV version if you're using RMMV) file into `<your project's folder>/js/plugins`
+
+# Troubleshooting
+
+Please submit your issue to [Github issues](https://github.com/00due/Discord-RPC-for-RMMZ/issues).
 
 # Initial setup:
 
@@ -58,6 +62,8 @@ You can also save the current values for later use.
 
 As of ver1.1, deleting the second row is also possible.
 
+Changing the small picture is currently exclusive to MZ.
+
 
 # (MV) Plugin commands
 
@@ -79,6 +85,19 @@ rpc_disable row2
 rpc_restore row1
 rpc_enable row2
 ```
+
+Plugins Commands (v1.2 Extended by Maxii1996)
+
+You can use:
+
+`\partyX[stat]` or `\v[x]`
+
+Inside a plugin command to return that stat or variables inside command plugins.
+
+Example:
+
+`\party1[name]` will return Party 1 position Name.
+
 
 # Terms of use:
 
