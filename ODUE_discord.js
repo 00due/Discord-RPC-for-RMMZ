@@ -3,30 +3,30 @@
  * @author ODUE
  * @url https://github.com/00due/Discord-RPC-for-RMMZ
  * @target MZ
- * 
+ *
  * @help
  * Initial setup:
- * 
+ *
  * 0. If you don't have Node.js installed, install it from https://nodejs.org/en/download
- * 
+ *
  * 1. Open the folder of your game (where you have your game.rmmzproject in) and open CMD or powershell there.
- * 
+ *
  * 2. Run the command 'npm install discord-rpc' (without the '' symbols)
  * ---If you're getting an error Command not found or something like that, make sure you have Node.js installed!---
- * 
+ *
  * 3. Go to https://discord.com/developers/applications and create your application. Click 'New application' and give it your game's name.
  * After creating it, open the Rich Presence --> Art assets tab, and upload the large and small images.
  * ---Recommendation: The large image is typically the logo of your game.---
  * ---WARNING: The art assets have about 10-15 minutes delay until they become visible.---
- * 
+ *
  * 4. Copy the Application ID from the 'General information' tab, and paste it into the 'Discord application ID' on this plugin.
- * 
+ *
  * 5. Fill the other plugin parameters with anything you want.
  * REQUIRED TO FILL:
  * Application ID, Large picture, Large picture text, Row 1
- * 
- * 
- * 
+ *
+ *
+ *
  * Changing the details after the initial setup:
  *
  * 1. Open Plugin commands --> ODUE_discord
@@ -48,116 +48,116 @@
  * 4. This plugin is provided as is. I'm not responsible for anything you make with this plugin.
  * 5. You can send feature requests to me on platforms such as Reddit (to u/SanttuPOIKA----).
  *    However, I have no obligation to fulfill your requests.
- * 
- * 
- * 
- * 
+ *
+ *
+ *
+ *
  * Plugins Commands (v1.2 Extended by Maxii1996)
- * 
- * You can use: 
- * 
+ *
+ * You can use:
+ *
  * \partyX[stat] or \v[x]
- * 
- * Inside a plugin command to return that stat or variables 
+ *
+ * Inside a plugin command to return that stat or variables
  * inside command plugins.
- * 
+ *
  * Example:
- * 
+ *
  * \party1[name] will return Party 1 position Name.
- * 
+ *
  * @param Discord application ID
  * @desc Type here your game's application ID
  * @type text
- * 
+ *
  * @param
- * 
+ *
  * @param Large picture
  * @desc Enter the name of the large picture you want to use.
  * @type text
- * 
+ *
  * @param Large picture text
  * @desc Enter the text when hovering the large picture with your cursor. (Max 128 characters)
  * @type text
  * @default Playing a game
- * 
+ *
  * @param Enable small picture
  * @desc Enables the small picture shown in the rich presence.
  * @type boolean
  * @default false
  * @on yes
  * @off no
- * 
+ *
  * @param Small picture
  * @desc Enter the name of the small picture you want to use.
  * @parent Enable small picture
  * @type text
- * 
+ *
  * @param Small picture text
  * @desc Enter the text when hovering the small picture with your cursor. (Max 128 characters)
  * @parent Enable small picture
  * @type text
  * @default Developed by someone
- * 
+ *
  * @param
- * 
+ *
  * @param Row 1
  * @desc The first row of text in Discord. (Max 128 characters)
  * @type text
  * @default Playing a cool game!
- * 
+ *
  * @param Show row 2
  * @desc Disable if you don't want the second row to be visible.
  * @type boolean
  * @default true
  * @on yes
  * @off no
- * 
+ *
  * @param Row 2
  * @desc The second row of text in Discord. (Max 128 characters)
  * @parent Show row 2
  * @type text
  * @default Exploring a cool world!
- * 
+ *
  * @param
- * 
+ *
  * @param Enable button 1
  * @desc Enable the first button
  * @type boolean
  * @default true
  * @on Enabled
  * @off Disabled
- * 
+ *
  * @param Button 1 URL
  * @parent Enable button 1
  * @desc Where should the first button lead to?
  * @type text
  * @default https://yourname.itch.io/your-game/
- * 
+ *
  * @param Button 1 text
  * @parent Enable button 1
  * @desc The text on the button. (Max 32 characters)
  * @type text
  * @default Download this game!
- * 
+ *
  * @param Enable button 2
  * @desc Enable the second button (WARNING: You must enable Button 1 for this to work.)
  * @type boolean
  * @default false
  * @on Enabled
  * @off Disabled
- * 
+ *
  * @param Button 2 URL
  * @parent Enable button 2
  * @desc Where should the first button lead to?
  * @type text
  * @default https://your-website.com/
- * 
+ *
  * @param Button 2 text
  * @parent Enable button 2
  * @desc The text on the button. (Max 32 characters)
  * @type text
  * @default Visit the game's website!
- * 
+ *
  * @param Show playtime
  * @desc Shows how long has been played
  * @type boolean
@@ -165,10 +165,10 @@
  * @on Show
  * @off Don't show
  *
- * 
+ *
  * @command Edit row 1
  * @desc Edit the row 1 of Discord status
- * 
+ *
  * @arg row1
  * @text New value
  * @desc Max 128 characters
@@ -181,10 +181,10 @@
  * @text New value
  * @desc Max 128 characters
  * @type text
- * 
+ *
  * @command Disable row 2
  * @desc Disable the row 2 of Discord status
- * 
+ *
  * @command Enable row 2
  * @desc Enable the row 2 of Discord status
  *
@@ -207,31 +207,31 @@
  * @on Restore
  * @off Don't restore
  * @default true
- * 
- * 
- * @command ChangeSmallPicture
+ *
+ *
+ * @command Change small picture
  * @desc Change the Discord's small picture.
- * 
+ *
  * @arg newSmallPicture
  * @text New Small Picture
  * @desc Name of the new small picture.
  * @type text
  *
- * @command ChangeSmallPictureText
+ * @command Change small picture text
  * @desc Change the text of Discord's small picture.
- * 
+ *
  * @arg newSmallPictureText
  * @text New Small Picture Text
  * @desc Text for the new small picture.
  * @type text
- * 
+ *
  */
 
 
 
 let parameters = PluginManager.parameters('ODUE_discord');
 
-let appId = parameters['Discord application ID'];
+const appId = parameters['Discord application ID'];
 if (appId.length < 10) {
     console.error("DISCORD ERROR: Invalid Application ID!");
 }
@@ -298,45 +298,17 @@ function interpretText(text) {
         const stat = p2.toLowerCase();
         const actor = $gameParty.members()[memberIndex];
         if (actor) {
-            switch (stat) {
-                case 'mhp':
-                    return actor.mhp;
-                case 'mmp':
-                    return actor.mmp;
-                case 'atk':
-                    return actor.atk;
-                case 'def':
-                    return actor.def;
-                case 'mat':
-                    return actor.mat;
-                case 'mdf':
-                    return actor.mdf;
-                case 'agi':
-                    return actor.agi;
-                case 'luk':
-                    return actor.luk;
-                case 'hp':
-                    return actor.hp;
-                case 'mp':
-                    return actor.mp;
-                case 'tp':
-                    return actor.tp;
-                case 'level':
-                    return actor.level;
-                case 'name':
-                    return actor.name();
-                case 'class':
-                    return actor.currentClass().name;
-                case 'nickname':
-                    return actor.nickname();
-                case 'profile':
-                    return actor.profile();
-                default:
-                    return '';
+            if (['mhp', 'mmp', 'atk', 'def', 'mat', 'mdf', 'agi', 'luk', 'hp', 'mp', 'tp', 'level'].includes(stat)) {
+                return actor[stat];
+            } else if (['name', 'nickname', 'profile'].includes(stat)) {
+                return actor[stat]();
+            } else if (stat === 'class') {
+                return actor.currentClass().name;
+            } else {
+                return '';
             }
-        } else {
-            return '';
         }
+        else return '';
     });
 
     return text;
@@ -362,11 +334,11 @@ for (let {string, length, error} of stringsToCheck) {
     }
 }
 
-let rpc = require("discord-rpc");
-let client = new rpc.Client({ transport: 'ipc' });
+const rpc = require("discord-rpc");
+const client = new rpc.Client({ transport: 'ipc' });
 client.login({ clientId: appId });
 
-let createActivityObject = (details, state) => ({
+const createActivityObject = (details, state) => ({
     pid: process.pid,
     activity: {
         details,
@@ -443,12 +415,12 @@ PluginManager.registerCommand("ODUE_discord", 'Enable row 2', () => {
     setPresence();
 });
 
-PluginManager.registerCommand("ODUE_discord", 'ChangeSmallPicture', args => {
+PluginManager.registerCommand("ODUE_discord", 'Change small picture', args => {
     smallPicture = interpretText(String(args.newSmallPicture));
     setPresence();
 });
 
-PluginManager.registerCommand("ODUE_discord", 'ChangeSmallPictureText', args => {
+PluginManager.registerCommand("ODUE_discord", 'Change small picture text', args => {
     smallPictureText = interpretText(String(args.newSmallPictureText));
     setPresence();
 });
