@@ -39,19 +39,6 @@
  * As of ver1.1, deleting the second row is also possible.
  *
  *
- *
- * Terms of use:
- *
- * 1. You must give credit to ODUE
- * 2. You can freely edit this plugin to your needs. However, you must still credit me.
- * 3. This plugin is free for commercial and non-commercial projects.
- * 4. This plugin is provided as is. I'm not responsible for anything you make with this plugin.
- * 5. You can send feature requests to me on platforms such as Reddit (to u/SanttuPOIKA----).
- *    However, I have no obligation to fulfill your requests.
- *
- *
- *
- *
  * Plugins Commands (v1.2 Extended by Maxii1996)
  *
  * You can use:
@@ -64,6 +51,19 @@
  * Example:
  *
  * \party1[name] will return Party 1 position Name.
+ *
+ * 
+ *
+ * Terms of use:
+ *
+ * 1. You must give credit to ODUE
+ * 2. You can freely edit this plugin to your needs. However, you must still credit me.
+ * 3. This plugin is free for commercial and non-commercial projects.
+ * 4. This plugin is provided as is. I'm not responsible for anything you make with this plugin.
+ * 5. You can send feature requests to me on platforms such as Reddit (to u/SanttuPOIKA----).
+ *    However, I have no obligation to fulfill your requests.
+ *
+ *
  *
  * @param Discord application ID
  * @desc Type here your game's application ID
@@ -280,13 +280,6 @@ function getButtons(parameters) {
     }
 }
 
-//Warnings
-
-function checkStringLength(text, maxLength, errorMessage) {
-    if (text.length > maxLength) console.error(errorMessage)
-}
-
-
 function interpretText(text) {
 
     text = text.replace(/\\v\[(\d+)\]/gi, function(match, p1) {
@@ -314,7 +307,11 @@ function interpretText(text) {
     return text;
 }
 
+//Warnings
 
+function checkStringLength(text, maxLength, errorMessage) {
+    if (text.length > maxLength) console.error(errorMessage)
+}
 
 let stringsToCheck = [
     {string: firstRow, length: 128, error: "DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled."},
