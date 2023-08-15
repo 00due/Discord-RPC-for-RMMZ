@@ -1,5 +1,5 @@
 /*:
- * @plugindesc (Ver1.1) Discord Rich Presence integration to RPG Maker MV.
+ * @plugindesc (Ver1.2) Discord Rich Presence integration to RPG Maker MV.
  * @author ODUE
  * @url https://github.com/00due/Discord-RPC-for-RMMZ
  * @target MV
@@ -34,7 +34,7 @@
  * rpc_restore <row1 / row2>   – Restores a saved row
  * rpc_enable row2   - Enables the second row
  * rpc_disable row2   - Disables the second row
- *
+ * 
  * Examples:
  * // On battle start
  * rpc_saveRows
@@ -44,6 +44,21 @@
  * // On battle end
  * rpc_restore row1
  * rpc_enable row2
+ * 
+ * 
+ * Plugins Commands (v1.2 Extended by Maxii1996)
+ *
+ * You can use:
+ *
+ * \partyX[stat] or \v[x]
+ *
+ * Inside a plugin command to return that stat or variables
+ * inside command plugins.
+ *
+ * Example:
+ *
+ * \party1[name] will return Party 1 position Name.
+ *
  *
  *
  * Terms of use:
@@ -162,13 +177,13 @@ if (appId.length < 10) {
     console.error("DISCORD ERROR: Invalid Application ID!");
 }
 
-const bigPicture = parameters['Large picture'];
-const bigPictureText = parameters['Large picture text'];
+let bigPicture = parameters['Large picture'];
+let bigPictureText = parameters['Large picture text'];
 let smallPictureEnabled;
 smallPictureEnabled = parameters['Enable small picture'] === "true";
 
-const smallPicture = parameters['Small picture'];
-const smallPictureText = parameters['Small picture text'];
+let smallPicture = parameters['Small picture'];
+let smallPictureText = parameters['Small picture text'];
 
 
 let firstRow = parameters['Row 1'];
@@ -206,6 +221,33 @@ function getButtons(parameters) {
     }
 }
 
+function interpretText(text) {
+
+    text = text.replace(/\\v\[(\d+)\]/gi, function(match, p1) {
+        return $gameVariables.value(Number(p1));
+    });
+
+    text = text.replace(/\\party(\d+)\[(\w+)\]/gi, function(match, p1, p2) {
+        const memberIndex = Number(p1) - 1;
+        const stat = p2.toLowerCase();
+        const actor = $gameParty.members()[memberIndex];
+        if (actor) {
+            if (['mhp', 'mmp', 'atk', 'def', 'mat', 'mdf', 'agi', 'luk', 'hp', 'mp', 'tp', 'level'].includes(stat)) {
+                return actor[stat];
+            } else if (['name', 'nickname', 'profile'].includes(stat)) {
+                return actor[stat]();
+            } else if (stat === 'class') {
+                return actor.currentClass().name;
+            } else {
+                return '';
+            }
+        }
+        else return '';
+    });
+
+    return text;
+}
+
 //Warnings
 
 function checkStringLength(text, maxLength, errorMessage) {
@@ -235,17 +277,23 @@ let pluginComm = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
     pluginComm.call(this, command, args);
     if (command === 'rpc_replaceRow1') {
-        if (args[0] != '') {
-            combinedArgs = args.join(" ")
-            replaceRow1(combinedArgs);
+        let interpretedText = interpretText(args.row1);
+        if (interpretedText.length <= 128) {
+            firstRow = interpretedText;
+            if (row2Enabled) setPresence();
+            else deleteRow2();
         }
+        else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
     }
 
     if (command === 'rpc_replaceRow2') {
-        if (args[0] != '') {
-            combinedArgs = args.join(" ")
-            replaceRow2(combinedArgs);
+            let interpretedText = interpretText(args.row2);
+        if (interpretedText.length <= 128) {
+            secondRow = interpretedText;
+            if (row2Enabled) setPresence();
+            else deleteRow2();
         }
+        else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has not been updated.")
     }
 
     if (command === 'rpc_saveRows') {
