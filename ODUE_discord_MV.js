@@ -172,31 +172,31 @@
 
 let discordParameters = PluginManager.parameters('ODUE_discord_MV');
 
-const appId = parameters['Discord application ID'];
+const appId = discordParameters['Discord application ID'];
 if (appId.length < 10) {
     console.error("DISCORD ERROR: Invalid Application ID!");
 }
 
-let bigPicture = parameters['Large picture'];
-let bigPictureText = parameters['Large picture text'];
+let bigPicture = discordParameters['Large picture'];
+let bigPictureText = discordParameters['Large picture text'];
 let smallPictureEnabled;
-smallPictureEnabled = parameters['Enable small picture'] === "true";
+smallPictureEnabled = discordParameters['Enable small picture'] === "true";
 
-let smallPicture = parameters['Small picture'];
-let smallPictureText = parameters['Small picture text'];
+let smallPicture = discordParameters['Small picture'];
+let smallPictureText = discordParameters['Small picture text'];
 
 
-let firstRow = parameters['Row 1'];
-let secondRow = parameters['Row 2'];
+let firstRow = discordParameters['Row 1'];
+let secondRow = discordParameters['Row 2'];
 let firstRowSaved;
 let secondRowSaved;
 
 let row2Enabled;
 
-row2Enabled = parameters['Show row 2'] === "true";
+row2Enabled = discordParameters['Show row 2'] === "true";
 
 let playtime;
-if (parameters['Show playtime'] === "true") {
+if (discordParameters['Show playtime'] === "true") {
     playtime = Date.now();
 }
 
@@ -208,13 +208,13 @@ let button2Text;
 let buttons = getButtons(parameters);
 
 function getButtons(parameters) {
-    if (parameters['Enable button 1'] === "true") {
-        button1Text = parameters['Button 1 text'];
-        button1Url = parameters['Button 1 URL'];
+    if (discordParameters['Enable button 1'] === "true") {
+        button1Text = discordParameters['Button 1 text'];
+        button1Url = discordParameters['Button 1 URL'];
         let buttonArr = [{ label: button1Text, url: button1Url }];
-        if (parameters['Enable button 2'] === "true") {
-            button2Text = parameters['Button 2 text'];
-            button2Url = parameters['Button 2 URL'];
+        if (discordParameters['Enable button 2'] === "true") {
+            button2Text = discordParameters['Button 2 text'];
+            button2Url = discordParameters['Button 2 URL'];
             buttonArr.push({ label: button2Text, url: button2Url });
         }
         return buttonArr;
