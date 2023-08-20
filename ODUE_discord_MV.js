@@ -356,7 +356,7 @@ saveRows = function () {
 };
 
 replaceRow1 = function (newRow) {
-    let interpretedText = interpretText(args.row1);
+    let interpretedText = interpretText(newRow);
     if (interpretedText.length <= 128) {
         firstRow = interpretedText;
         if (row2Enabled) setPresence();
@@ -366,7 +366,7 @@ replaceRow1 = function (newRow) {
 };
 
 replaceRow2 = function (newRow) {
-    let interpretedText = interpretText(args.row2);
+    let interpretedText = interpretText(newRow);
     if (interpretedText.length <= 128) {
         secondRow = interpretedText;
         if (row2Enabled) setPresence();
