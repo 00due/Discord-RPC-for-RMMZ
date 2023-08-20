@@ -366,13 +366,13 @@ replaceRow1 = function (newRow) {
 };
 
 replaceRow2 = function (newRow) {
-    let interpretedText = interpretText(args.row1);
+    let interpretedText = interpretText(args.row2);
     if (interpretedText.length <= 128) {
         secondRow = interpretedText;
         if (row2Enabled) setPresence();
         else deleteRow2();
     }
-    else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
+    else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has been disabled.")
 };
 
 restoreRows = function (rowToRestore) {
