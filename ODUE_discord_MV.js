@@ -205,9 +205,9 @@ let button1Text;
 let button2Url;
 let button2Text;
 
-let buttons = getButtons(parameters);
+let buttons = getButtons(discordParameters);
 
-function getButtons(parameters) {
+function getButtons(discordParameters) {
     if (discordParameters['Enable button 1'] === "true") {
         button1Text = discordParameters['Button 1 text'];
         button1Url = discordParameters['Button 1 URL'];
@@ -277,23 +277,17 @@ let pluginComm = Game_Interpreter.prototype.pluginCommand;
 Game_Interpreter.prototype.pluginCommand = function(command, args) {
     pluginComm.call(this, command, args);
     if (command === 'rpc_replaceRow1') {
-        let interpretedText = interpretText(args.row1);
-        if (interpretedText.length <= 128) {
-            firstRow = interpretedText;
-            if (row2Enabled) setPresence();
-            else deleteRow2();
+        if (args[0] != '') {
+            combinedArgs = args.join(" ")
+            replaceRow1(combinedArgs);
         }
-        else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
     }
 
     if (command === 'rpc_replaceRow2') {
-            let interpretedText = interpretText(args.row2);
-        if (interpretedText.length <= 128) {
-            secondRow = interpretedText;
-            if (row2Enabled) setPresence();
-            else deleteRow2();
+        if (args[0] != '') {
+            combinedArgs = args.join(" ")
+            replaceRow2(combinedArgs);
         }
-        else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has not been updated.")
     }
 
     if (command === 'rpc_saveRows') {
@@ -362,17 +356,21 @@ saveRows = function () {
 };
 
 replaceRow1 = function (newRow) {
-    if (newRow.length <= 128) {
-        firstRow = newRow;
-        setPresence();
+    let interpretedText = interpretText(newRow);
+    if (interpretedText.length <= 128) {
+        firstRow = interpretedText;
+        if (row2Enabled) setPresence();
+        else deleteRow2();
     }
     else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
 };
 
 replaceRow2 = function (newRow) {
-    if (newRow.length <= 128) {
-        secondRow = newRow;
-        setPresence();
+    let interpretedText = interpretText(newRow);
+    if (interpretedText.length <= 128) {
+        secondRow = interpretedText;
+        if (row2Enabled) setPresence();
+        else deleteRow2();
     }
     else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has been disabled.")
 };
@@ -381,11 +379,13 @@ restoreRows = function (rowToRestore) {
     switch (rowToRestore) {
         case 1:
             firstRow = firstRowSaved;
-            setPresence();
+            if (row2Enabled) setPresence();
+            else deleteRow2();
             return;
         case 2:
             secondRow = secondRowSaved;
-            setPresence();
+            if (row2Enabled) setPresence();
+            else deleteRow2();
             return;
     }
 };
