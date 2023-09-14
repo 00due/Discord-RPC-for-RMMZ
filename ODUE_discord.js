@@ -263,11 +263,12 @@ if (usingMz) {
     */
 }
 
-
+//Check if not running in nwjs environment
 if (typeof require !== 'function' || typeof process !== 'object' || !process.versions || !process.versions.nw) {
   console.warn('Warning: nwjs not found (running in browser?) - Discord Rich Presence disabled.');
 }
 else {
+    //Get plugin parameters
     let parameters = PluginManager.parameters('ODUE_discord');
 
     const appId = parameters['Discord application ID'];
@@ -319,6 +320,7 @@ else {
         }
     }
 
+    //Interpret text after \ (variables and actor stats only for the time being)
     function interpretText(text) {
 
         text = text.replace(/\\v\[(\d+)\]/gi, function(match, p1) {
