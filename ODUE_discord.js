@@ -1,8 +1,10 @@
+let usingMz = Utils.RPGMAKER_VERSION == "MZ" ? true : false;    
+
 /*:
- * @plugindesc (Ver 1.2.1) Discord Rich Presence integration to RPG Maker MZ.
+ * @plugindesc (Ver 1.2.1) Discord Rich Presence integration to RPG Maker MV/MZ.
  * @author ODUE
  * @url https://github.com/00due/Discord-RPC-for-RMMZ
- * @target MZ
+ * @target MV MZ
  *
  * @help
  * Initial setup:
@@ -27,7 +29,7 @@
  *
  *
  *
- * Changing the details after the initial setup:
+ * (MZ) Plugin Commands:
  *
  * 1. Open Plugin commands --> ODUE_discord
  *
@@ -37,6 +39,28 @@
  *
  * You can also save the current values for later use.
  * As of ver1.1, deleting the second row is also possible.
+ * 
+ * 
+ * (MV) Plugin Commands:
+ * 
+ *  * Plugin commands:
+ *
+ * rpc_replaceRow1 <text to replace with>   - Replaces row 1 (maximum 128 characters)
+ * rpc_replaceRow2 <text to replace with>   - Replaces row 2 (maximum 128 characters)
+ * rpc_saveRows   - Save both rows for later use
+ * rpc_restore <row1 / row2>   – Restores a saved row
+ * rpc_enable row2   - Enables the second row
+ * rpc_disable row2   - Disables the second row
+ * 
+ * Examples:
+ * // On battle start
+ * rpc_saveRows
+ * rpc_replaceRow1 Fighting a monster
+ * rpc_disable row2
+ * 
+ * // On battle end
+ * rpc_restore row1
+ * rpc_enable row2
  *
  *
  * Plugins Commands (v1.2 Extended by Maxii1996)
@@ -69,7 +93,10 @@
  * @desc Type here your game's application ID
  * @type text
  *
- * @param
+ * @param spacer1
+ * @name --------------------
+ * @type text
+ * @default --------------------
  *
  * @param Large picture
  * @desc Enter the name of the large picture you want to use.
@@ -98,7 +125,10 @@
  * @type text
  * @default Developed by someone
  *
- * @param
+ * @param spacer2
+ * @name --------------------
+ * @type text
+ * @default --------------------
  *
  * @param Row 1
  * @desc The first row of text in Discord. (Max 128 characters)
@@ -118,7 +148,10 @@
  * @type text
  * @default Exploring a cool world!
  *
- * @param
+ * @param spacer3
+ * @name --------------------
+ * @type text
+ * @default --------------------
  *
  * @param Enable button 1
  * @desc Enable the first button
@@ -165,67 +198,70 @@
  * @on Show
  * @off Don't show
  *
- *
- * @command Edit row 1
- * @desc Edit the row 1 of Discord status
- *
- * @arg row1
- * @text New value
- * @desc Max 128 characters
- * @type text
- *
- * @command Edit row 2
- * @desc Edit the row 2 of Discord status
- *
- * @arg row2
- * @text New value
- * @desc Max 128 characters
- * @type text
- *
- * @command Disable row 2
- * @desc Disable the row 2 of Discord status
- *
- * @command Enable row 2
- * @desc Enable the row 2 of Discord status
- *
- * @command Save values
- * @desc Saves the current values of row 1 and 2
- *
- * @command Restore values
- * @desc Restores the saved values of the rows
- *
- * @arg restoreRow1
- * @text First row
- * @type boolean
- * @on Restore
- * @off Don't restore
- * @default true
- *
- * @arg restoreRow2
- * @text Second row
- * @type boolean
- * @on Restore
- * @off Don't restore
- * @default true
- *
- *
- * @command Change small picture
- * @desc Change the Discord's small picture.
- *
- * @arg newSmallPicture
- * @text New Small Picture
- * @desc Name of the new small picture.
- * @type text
- *
- * @command Change small picture text
- * @desc Change the text of Discord's small picture.
- *
- * @arg newSmallPictureText
- * @text New Small Picture Text
- * @desc Text for the new small picture.
- * @type text
- *
  */
+if (usingMz) {
+    /* 
+    * @command Edit row 1
+    * @desc Edit the row 1 of Discord status
+    *
+    * @arg row1
+    * @text New value
+    * @desc Max 128 characters
+    * @type text
+    *
+    * @command Edit row 2
+    * @desc Edit the row 2 of Discord status
+    *
+    * @arg row2
+    * @text New value
+    * @desc Max 128 characters
+    * @type text
+    *
+    * @command Disable row 2
+    * @desc Disable the row 2 of Discord status
+    *
+    * @command Enable row 2
+    * @desc Enable the row 2 of Discord status
+    *
+    * @command Save values
+    * @desc Saves the current values of row 1 and 2
+    *
+    * @command Restore values
+    * @desc Restores the saved values of the rows
+    *
+    * @arg restoreRow1
+    * @text First row
+    * @type boolean
+    * @on Restore
+    * @off Don't restore
+    * @default true
+    *
+    * @arg restoreRow2
+    * @text Second row
+    * @type boolean
+    * @on Restore
+    * @off Don't restore
+    * @default true
+    *
+    *
+    * @command Change small picture
+    * @desc Change the Discord's small picture.
+    *
+    * @arg newSmallPicture
+    * @text New Small Picture
+    * @desc Name of the new small picture.
+    * @type text
+    *
+    * @command Change small picture text
+    * @desc Change the text of Discord's small picture.
+    *
+    * @arg newSmallPictureText
+    * @text New Small Picture Text
+    * @desc Text for the new small picture.
+    * @type text
+    *
+    */
+}
 
 
 if (typeof require !== 'function' || typeof process !== 'object' || !process.versions || !process.versions.nw) {
@@ -334,6 +370,48 @@ else {
         }
     }
 
+    //MV commands
+
+    if (!usingMz) {
+        let pluginComm = Game_Interpreter.prototype.pluginCommand;
+        Game_Interpreter.prototype.pluginCommand = function(command, args) {
+            pluginComm.call(this, command, args);
+            if (command === 'rpc_replaceRow1') {
+                if (args[0] != '') {
+                    combinedArgs = args.join(" ")
+                    replaceRow1(combinedArgs);
+                }
+            }
+    
+            if (command === 'rpc_replaceRow2') {
+                if (args[0] != '') {
+                    combinedArgs = args.join(" ")
+                    replaceRow2(combinedArgs);
+                }
+            }
+    
+            if (command === 'rpc_saveRows') {
+                    saveRows();
+            }
+    
+            if (command === 'rpc_restore') {
+                switch (args[0]) {
+                    case 'row1': restoreRows(1); break;
+                    case 'row2': restoreRows(2); break;
+                }
+            }
+            if (command === 'rpc_enable') {
+                if (args[0] === "row2") enableSecondRow();
+                
+            }
+            if (command === 'rpc_disable') {
+                if (args[0] === "row2") disableSecondRow();
+                
+            }
+        };
+    }
+
+    //update presence
     const rpc = require("discord-rpc");
     const client = new rpc.Client({ transport: 'ipc' });
     client.login({ clientId: appId });
@@ -355,73 +433,76 @@ else {
             buttons,
         }
     });
-
+    //set presence with row 1 and 2
     let setPresence = function () {
         let activity = createActivityObject(firstRow, secondRow);
         client.request('SET_ACTIVITY', activity);
     };
-
+    //set presence with only row 1
     let deleteRow2 = function () {
         let activity = createActivityObject(firstRow);
         client.request('SET_ACTIVITY', activity);
     };
 
-
+    //Initialize presence
     client.on('ready', () => {
         if (row2Enabled) setPresence();
         else deleteRow2();
     });
 
-    PluginManager.registerCommand("ODUE_discord", 'Save values', () => {
-        firstRowSaved = firstRow;
-        secondRowSaved = secondRow;
-    });
+    //MZ plugin commands
+    if (usingMz) {
+        PluginManager.registerCommand("ODUE_discord", 'Save values', () => {
+            firstRowSaved = firstRow;
+            secondRowSaved = secondRow;
+        });
 
-    PluginManager.registerCommand("ODUE_discord", 'Edit row 1', args => {
-        let interpretedText = interpretText(args.row1);
-        if (interpretedText.length <= 128) {
-            firstRow = interpretedText;
+        PluginManager.registerCommand("ODUE_discord", 'Edit row 1', args => {
+            let interpretedText = interpretText(args.row1);
+            if (interpretedText.length <= 128) {
+                firstRow = interpretedText;
+                if (row2Enabled) setPresence();
+                else deleteRow2();
+            }
+            else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
+        });
+
+        PluginManager.registerCommand("ODUE_discord", 'Edit row 2', args => {
+            let interpretedText = interpretText(args.row2);
+            if (interpretedText.length <= 128) {
+                secondRow = interpretedText;
+                if (row2Enabled) setPresence();
+                else deleteRow2();
+            }
+            else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has not been updated.")
+        });
+
+        PluginManager.registerCommand("ODUE_discord", 'Restore values', args => {
+            if (args.restoreRow1 === "true" && firstRowSaved.length !== 0) firstRow = firstRowSaved;
+            if (args.restoreRow2 === "true" && secondRowSaved.length !== 0) secondRow = secondRowSaved;
+
             if (row2Enabled) setPresence();
             else deleteRow2();
-        }
-        else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
-    });
+        });
 
-    PluginManager.registerCommand("ODUE_discord", 'Edit row 2', args => {
-        let interpretedText = interpretText(args.row2);
-        if (interpretedText.length <= 128) {
-            secondRow = interpretedText;
-            if (row2Enabled) setPresence();
-            else deleteRow2();
-        }
-        else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has not been updated.")
-    });
+        PluginManager.registerCommand("ODUE_discord", 'Disable row 2', () => {
+            row2Enabled = false;
+            deleteRow2();
+        });
 
-    PluginManager.registerCommand("ODUE_discord", 'Restore values', args => {
-        if (args.restoreRow1 === "true" && firstRowSaved.length !== 0) firstRow = firstRowSaved;
-        if (args.restoreRow2 === "true" && secondRowSaved.length !== 0) secondRow = secondRowSaved;
+        PluginManager.registerCommand("ODUE_discord", 'Enable row 2', () => {
+            row2Enabled = true;
+            setPresence();
+        });
 
-        if (row2Enabled) setPresence();
-        else deleteRow2();
-    });
+        PluginManager.registerCommand("ODUE_discord", 'Change small picture', args => {
+            smallPicture = interpretText(String(args.newSmallPicture));
+            setPresence();
+        });
 
-    PluginManager.registerCommand("ODUE_discord", 'Disable row 2', () => {
-        row2Enabled = false;
-        deleteRow2();
-    });
-
-    PluginManager.registerCommand("ODUE_discord", 'Enable row 2', () => {
-        row2Enabled = true;
-        setPresence();
-    });
-
-    PluginManager.registerCommand("ODUE_discord", 'Change small picture', args => {
-        smallPicture = interpretText(String(args.newSmallPicture));
-        setPresence();
-    });
-
-    PluginManager.registerCommand("ODUE_discord", 'Change small picture text', args => {
-        smallPictureText = interpretText(String(args.newSmallPictureText));
-        setPresence();
-    });
+        PluginManager.registerCommand("ODUE_discord", 'Change small picture text', args => {
+            smallPictureText = interpretText(String(args.newSmallPictureText));
+            setPresence();
+        });
+    }
 }
