@@ -1,4 +1,4 @@
-let usingMz = Utils.RPGMAKER_VERSION == "MZ" ? true : false;    
+let usingMz = Utils.RPGMAKER_VERSION == "1.4.0" ? true : false;    
 
 /*:
  * @plugindesc (Ver 1.2.1) Discord Rich Presence integration to RPG Maker MV/MZ.
@@ -263,248 +263,254 @@ if (usingMz) {
     */
 }
 
-//Check if not running in nwjs environment
-if (typeof require !== 'function' || typeof process !== 'object' || !process.versions || !process.versions.nw) {
-  console.warn('Warning: nwjs not found (running in browser?) - Discord Rich Presence disabled.');
-}
-else {
-    //Get plugin parameters
-    let parameters = PluginManager.parameters('ODUE_discord');
-
-    const appId = parameters['Discord application ID'];
-    if (appId.length < 10) {
-        console.error("DISCORD ERROR: Invalid Application ID!");
+(() => {
+    console.log(init);
+    //Check if not running in nwjs environment
+    if (typeof require !== 'function' || typeof process !== 'object' || !process.versions || !process.versions.nw) {
+    console.warn('Warning: nwjs not found (running in browser?) - Discord Rich Presence disabled.');
     }
+    else {
+        console.log("Using MZ: " + usingMz);
+        console.log("RPG Maker version: " + Utils.RPGMAKER_VERSION);
+        //Get plugin parameters
+        let parameters = PluginManager.parameters('ODUE_discord');
 
-    let bigPicture = parameters['Large picture'];
-    let bigPictureText = parameters['Large picture text'];
-    let smallPictureEnabled;
-    smallPictureEnabled = parameters['Enable small picture'] === "true";
-
-    let smallPicture = parameters['Small picture'];
-    let smallPictureText = parameters['Small picture text'];
-
-
-    let firstRow = parameters['Row 1'];
-    let secondRow = parameters['Row 2'];
-    let firstRowSaved;
-    let secondRowSaved;
-
-    let row2Enabled;
-
-    row2Enabled = parameters['Show row 2'] === "true";
-
-    let playtime;
-    if (parameters['Show playtime'] === "true") {
-        playtime = Date.now();
-    }
-
-    let button1Url;
-    let button1Text;
-    let button2Url;
-    let button2Text;
-
-    let buttons = getButtons(parameters);
-
-    function getButtons(parameters) {
-        if (parameters['Enable button 1'] === "true") {
-            button1Text = parameters['Button 1 text'];
-            button1Url = parameters['Button 1 URL'];
-            let buttonArr = [{ label: button1Text, url: button1Url }];
-            if (parameters['Enable button 2'] === "true") {
-                button2Text = parameters['Button 2 text'];
-                button2Url = parameters['Button 2 URL'];
-                buttonArr.push({ label: button2Text, url: button2Url });
-            }
-            return buttonArr;
+        const appId = parameters['Discord application ID'];
+        if (appId.length < 10) {
+            console.error("DISCORD ERROR: Invalid Application ID!");
         }
-    }
 
-    //Interpret text after \ (variables and actor stats only for the time being)
-    function interpretText(text) {
+        let bigPicture = parameters['Large picture'];
+        let bigPictureText = parameters['Large picture text'];
+        let smallPictureEnabled;
+        smallPictureEnabled = parameters['Enable small picture'] === "true";
 
-        text = text.replace(/\\v\[(\d+)\]/gi, function(match, p1) {
-            return $gameVariables.value(Number(p1));
-        });
+        let smallPicture = parameters['Small picture'];
+        let smallPictureText = parameters['Small picture text'];
 
-        text = text.replace(/\\party(\d+)\[(\w+)\]/gi, function(match, p1, p2) {
-            const memberIndex = Number(p1) - 1;
-            const stat = p2.toLowerCase();
-            const actor = $gameParty.members()[memberIndex];
-            if (actor) {
-                if (['mhp', 'mmp', 'atk', 'def', 'mat', 'mdf', 'agi', 'luk', 'hp', 'mp', 'tp', 'level'].includes(stat)) {
-                    return actor[stat];
-                } else if (['name', 'nickname', 'profile'].includes(stat)) {
-                    return actor[stat]();
-                } else if (stat === 'class') {
-                    return actor.currentClass().name;
-                } else {
-                    return '';
-                }
-            }
-            else return '';
-        });
 
-        return text;
-    }
+        let firstRow = parameters['Row 1'];
+        let secondRow = parameters['Row 2'];
+        let firstRowSaved;
+        let secondRowSaved;
 
-    //Warnings
+        let row2Enabled;
 
-    function checkStringLength(text, maxLength, errorMessage) {
-        if (text.length > maxLength) console.error(errorMessage)
-    }
+        row2Enabled = parameters['Show row 2'] === "true";
 
-    let stringsToCheck = [
-        {string: firstRow, length: 128, error: "DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled."},
-        {string: secondRow, length: 128, error: "DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has been disabled."},
-        {string: button1Text, length: 32, error: "DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled."},
-        {string: button2Text, length: 32, error: "DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled."},
-        {string: bigPictureText, length: 128, error: "DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled."},
-        {string: smallPictureText, length: 128, error: "DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled."}
-    ]
-
-    for (let {string, length, error} of stringsToCheck) {
-        try {
-            checkStringLength(string, length, error);
+        let playtime;
+        if (parameters['Show playtime'] === "true") {
+            playtime = Date.now();
         }
-        catch (TypeError) {
-            console.warn("WARNING: Length check failed. Don't worry, this shouldn't matter.");
+
+        let button1Url;
+        let button1Text;
+        let button2Url;
+        let button2Text;
+
+        let buttons = getButtons(parameters);
+
+        function getButtons(parameters) {
+            if (parameters['Enable button 1'] === "true") {
+                button1Text = parameters['Button 1 text'];
+                button1Url = parameters['Button 1 URL'];
+                let buttonArr = [{ label: button1Text, url: button1Url }];
+                if (parameters['Enable button 2'] === "true") {
+                    button2Text = parameters['Button 2 text'];
+                    button2Url = parameters['Button 2 URL'];
+                    buttonArr.push({ label: button2Text, url: button2Url });
+                }
+                return buttonArr;
+            }
         }
-    }
 
-    //MV commands
+        //Interpret text after \ (variables and actor stats only for the time being)
+        function interpretText(text) {
 
-    if (!usingMz) {
-        let pluginComm = Game_Interpreter.prototype.pluginCommand;
-        Game_Interpreter.prototype.pluginCommand = function(command, args) {
-            pluginComm.call(this, command, args);
-            if (command === 'rpc_replaceRow1') {
-                if (args[0] != '') {
-                    combinedArgs = args.join(" ")
-                    replaceRow1(combinedArgs);
+            text = text.replace(/\\v\[(\d+)\]/gi, function(match, p1) {
+                return $gameVariables.value(Number(p1));
+            });
+
+            text = text.replace(/\\party(\d+)\[(\w+)\]/gi, function(match, p1, p2) {
+                const memberIndex = Number(p1) - 1;
+                const stat = p2.toLowerCase();
+                const actor = $gameParty.members()[memberIndex];
+                if (actor) {
+                    if (['mhp', 'mmp', 'atk', 'def', 'mat', 'mdf', 'agi', 'luk', 'hp', 'mp', 'tp', 'level'].includes(stat)) {
+                        return actor[stat];
+                    } else if (['name', 'nickname', 'profile'].includes(stat)) {
+                        return actor[stat]();
+                    } else if (stat === 'class') {
+                        return actor.currentClass().name;
+                    } else {
+                        return '';
+                    }
                 }
-            }
-    
-            if (command === 'rpc_replaceRow2') {
-                if (args[0] != '') {
-                    combinedArgs = args.join(" ")
-                    replaceRow2(combinedArgs);
-                }
-            }
-    
-            if (command === 'rpc_saveRows') {
-                    saveRows();
-            }
-    
-            if (command === 'rpc_restore') {
-                switch (args[0]) {
-                    case 'row1': restoreRows(1); break;
-                    case 'row2': restoreRows(2); break;
-                }
-            }
-            if (command === 'rpc_enable') {
-                if (args[0] === "row2") enableSecondRow();
-                
-            }
-            if (command === 'rpc_disable') {
-                if (args[0] === "row2") disableSecondRow();
-                
-            }
-        };
-    }
+                else return '';
+            });
 
-    //update presence
-    const rpc = require("discord-rpc");
-    const client = new rpc.Client({ transport: 'ipc' });
-    client.login({ clientId: appId });
-
-    const createActivityObject = (details, state) => ({
-        pid: process.pid,
-        activity: {
-            details,
-            ...(state && {state}),
-            timestamps: { start: playtime },
-            assets: {
-                large_image: bigPicture,
-                large_text: bigPictureText,
-                ...(smallPictureEnabled && {
-                    small_image: smallPicture,
-                    small_text: smallPictureText
-                }),
-            },
-            buttons,
+            return text;
         }
-    });
-    //set presence with row 1 and 2
-    let setPresence = function () {
-        let activity = createActivityObject(firstRow, secondRow);
-        client.request('SET_ACTIVITY', activity);
-    };
-    //set presence with only row 1
-    let deleteRow2 = function () {
-        let activity = createActivityObject(firstRow);
-        client.request('SET_ACTIVITY', activity);
-    };
 
-    //Initialize presence
-    client.on('ready', () => {
-        if (row2Enabled) setPresence();
-        else deleteRow2();
-    });
+        //Warnings
 
-    //MZ plugin commands
-    if (usingMz) {
-        PluginManager.registerCommand("ODUE_discord", 'Save values', () => {
-            firstRowSaved = firstRow;
-            secondRowSaved = secondRow;
-        });
+        function checkStringLength(text, maxLength, errorMessage) {
+            if (text.length > maxLength) console.error(errorMessage)
+        }
 
-        PluginManager.registerCommand("ODUE_discord", 'Edit row 1', args => {
-            let interpretedText = interpretText(args.row1);
-            if (interpretedText.length <= 128) {
-                firstRow = interpretedText;
-                if (row2Enabled) setPresence();
-                else deleteRow2();
+        let stringsToCheck = [
+            {string: firstRow, length: 128, error: "DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled."},
+            {string: secondRow, length: 128, error: "DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has been disabled."},
+            {string: button1Text, length: 32, error: "DISCORD ERROR: The length of button 1 text is over 32 characters.\nDiscord rich presence has been disabled."},
+            {string: button2Text, length: 32, error: "DISCORD ERROR: The length of button 2 text is over 32 characters.\nDiscord rich presence has been disabled."},
+            {string: bigPictureText, length: 128, error: "DISCORD ERROR: The length of large picture text is over 32 characters.\nDiscord rich presence has been disabled."},
+            {string: smallPictureText, length: 128, error: "DISCORD ERROR: The length of small picture text is over 32 characters.\nDiscord rich presence has been disabled."}
+        ]
+
+        for (let {string, length, error} of stringsToCheck) {
+            try {
+                checkStringLength(string, length, error);
             }
-            else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
-        });
-
-        PluginManager.registerCommand("ODUE_discord", 'Edit row 2', args => {
-            let interpretedText = interpretText(args.row2);
-            if (interpretedText.length <= 128) {
-                secondRow = interpretedText;
-                if (row2Enabled) setPresence();
-                else deleteRow2();
+            catch (TypeError) {
+                console.warn("WARNING: Length check failed. Don't worry, this shouldn't matter.");
             }
-            else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has not been updated.")
+        }
+
+        //MV commands
+
+        if (!usingMz) {
+            let pluginComm = Game_Interpreter.prototype.pluginCommand;
+            Game_Interpreter.prototype.pluginCommand = function(command, args) {
+                pluginComm.call(this, command, args);
+                if (command === 'rpc_replaceRow1') {
+                    if (args[0] != '') {
+                        combinedArgs = args.join(" ")
+                        replaceRow1(combinedArgs);
+                    }
+                }
+        
+                if (command === 'rpc_replaceRow2') {
+                    if (args[0] != '') {
+                        combinedArgs = args.join(" ")
+                        replaceRow2(combinedArgs);
+                    }
+                }
+        
+                if (command === 'rpc_saveRows') {
+                        saveRows();
+                }
+        
+                if (command === 'rpc_restore') {
+                    switch (args[0]) {
+                        case 'row1': restoreRows(1); break;
+                        case 'row2': restoreRows(2); break;
+                    }
+                }
+                if (command === 'rpc_enable') {
+                    if (args[0] === "row2") enableSecondRow();
+                    
+                }
+                if (command === 'rpc_disable') {
+                    if (args[0] === "row2") disableSecondRow();
+                    
+                }
+            };
+        }
+
+        //update presence
+        const rpc = require("discord-rpc");
+        const client = new rpc.Client({ transport: 'ipc' });
+        client.login({ clientId: appId });
+
+        const createActivityObject = (details, state) => ({
+            pid: process.pid,
+            activity: {
+                details,
+                ...(state && {state}),
+                timestamps: { start: playtime },
+                assets: {
+                    large_image: bigPicture,
+                    large_text: bigPictureText,
+                    ...(smallPictureEnabled && {
+                        small_image: smallPicture,
+                        small_text: smallPictureText
+                    }),
+                },
+                buttons,
+            }
         });
+        //set presence with row 1 and 2
+        let setPresence = function () {
+            let activity = createActivityObject(firstRow, secondRow);
+            client.request('SET_ACTIVITY', activity);
+        }
+        //set presence with only row 1
+        let deleteRow2 = function () {
+            let activity = createActivityObject(firstRow);
+            client.request('SET_ACTIVITY', activity);
+        }
 
-        PluginManager.registerCommand("ODUE_discord", 'Restore values', args => {
-            if (args.restoreRow1 === "true" && firstRowSaved.length !== 0) firstRow = firstRowSaved;
-            if (args.restoreRow2 === "true" && secondRowSaved.length !== 0) secondRow = secondRowSaved;
-
+        //Initialize presence
+        client.on('ready', () => {
             if (row2Enabled) setPresence();
             else deleteRow2();
-        });
+            console.log("RPC enabled");
+        })
 
-        PluginManager.registerCommand("ODUE_discord", 'Disable row 2', () => {
-            row2Enabled = false;
-            deleteRow2();
-        });
+        //MZ plugin commands
+        if (usingMz) {
+            PluginManager.registerCommand("ODUE_discord", 'Save values', () => {
+                firstRowSaved = firstRow;
+                secondRowSaved = secondRow;
+            })
 
-        PluginManager.registerCommand("ODUE_discord", 'Enable row 2', () => {
-            row2Enabled = true;
-            setPresence();
-        });
+            PluginManager.registerCommand("ODUE_discord", 'Edit row 1', args => {
+                let interpretedText = interpretText(args.row1);
+                if (interpretedText.length <= 128) {
+                    firstRow = interpretedText;
+                    if (row2Enabled) setPresence();
+                    else deleteRow2();
+                }
+                else console.error("DISCORD ERROR: The length of row 1 is over 128 characters.\nDiscord rich presence has been disabled.")
+            })
 
-        PluginManager.registerCommand("ODUE_discord", 'Change small picture', args => {
-            smallPicture = interpretText(String(args.newSmallPicture));
-            setPresence();
-        });
+            PluginManager.registerCommand("ODUE_discord", 'Edit row 2', args => {
+                let interpretedText = interpretText(args.row2);
+                if (interpretedText.length <= 128) {
+                    secondRow = interpretedText;
+                    if (row2Enabled) setPresence();
+                    else deleteRow2();
+                }
+                else console.error("DISCORD ERROR: The length of row 2 is over 128 characters.\nDiscord rich presence has not been updated.")
+            });
 
-        PluginManager.registerCommand("ODUE_discord", 'Change small picture text', args => {
-            smallPictureText = interpretText(String(args.newSmallPictureText));
-            setPresence();
-        });
+            PluginManager.registerCommand("ODUE_discord", 'Restore values', args => {
+                if (args.restoreRow1 === "true" && firstRowSaved.length !== 0) firstRow = firstRowSaved;
+                if (args.restoreRow2 === "true" && secondRowSaved.length !== 0) secondRow = secondRowSaved;
+
+                if (row2Enabled) setPresence();
+                else deleteRow2();
+            })
+
+            PluginManager.registerCommand("ODUE_discord", 'Disable row 2', () => {
+                row2Enabled = false;
+                deleteRow2();
+            })
+
+            PluginManager.registerCommand("ODUE_discord", 'Enable row 2', () => {
+                row2Enabled = true;
+                setPresence();
+            })
+
+            PluginManager.registerCommand("ODUE_discord", 'Change small picture', args => {
+                smallPicture = interpretText(String(args.newSmallPicture));
+                setPresence();
+            })
+
+            PluginManager.registerCommand("ODUE_discord", 'Change small picture text', args => {
+                smallPictureText = interpretText(String(args.newSmallPictureText));
+                setPresence();
+            })
+        }
     }
-}
+})();
