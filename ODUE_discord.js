@@ -1,5 +1,5 @@
 /*:
- * @plugindesc (Ver 1.2.1) Discord Rich Presence integration to RPG Maker MZ.
+ * @plugindesc (Ver 1.3) Discord Rich Presence integration to RPG Maker MZ.
  * @author ODUE
  * @url https://github.com/00due/Discord-RPC-for-RMMZ
  * @target MZ
@@ -164,6 +164,13 @@
  * @default true
  * @on Show
  * @off Don't show
+ * 
+ * @param Enable settings option
+ * @desc Enable the settings option in the game to let the player enable / disable RPC.
+ * @type boolean
+ * @default false
+ * @on Show option
+ * @off Don't show
  *
  *
  * @command Edit row 1
@@ -224,6 +231,15 @@
  * @text New Small Picture Text
  * @desc Text for the new small picture.
  * @type text
+ * 
+ * @command Toggle RPC
+ * @desc Disable or enable the Discord RPC visibility.
+ * 
+ * @arg State
+ * @type boolean
+ * @default false
+ * @on Enable
+ * @off Disable
  *
  */
 
@@ -241,8 +257,7 @@ else {
 
     let bigPicture = parameters['Large picture'];
     let bigPictureText = parameters['Large picture text'];
-    let smallPictureEnabled;
-    smallPictureEnabled = parameters['Enable small picture'] === "true";
+    let smallPictureEnabled = parameters['Enable small picture'] === "true";
 
     let smallPicture = parameters['Small picture'];
     let smallPictureText = parameters['Small picture text'];
@@ -253,9 +268,7 @@ else {
     let firstRowSaved;
     let secondRowSaved;
 
-    let row2Enabled;
-
-    row2Enabled = parameters['Show row 2'] === "true";
+    let row2Enabled = parameters['Show row 2'] === "true";
 
     let playtime;
     if (parameters['Show playtime'] === "true") {
@@ -268,6 +281,50 @@ else {
     let button2Text;
 
     let buttons = getButtons(parameters);
+
+    let isActivityDisabledFromSettings = false;
+    let isActivityDisabledFromCommand = false;
+
+    let toggleRPC = function(shouldEnable, whereIsToggled) {
+        if (client) {
+            if (whereIsToggled === "settings") {
+                isActivityDisabledFromSettings = !shouldEnable;
+            }
+            else if (whereIsToggled === "command") {
+                isActivityDisabledFromCommand = !shouldEnable;
+            }
+
+            setPresence();
+        }
+    }
+
+
+    if (parameters['Enable settings option'] === "true") {
+		const Window_Options_prototype_addGeneralOptions = Window_Options.prototype.addGeneralOptions;
+		Window_Options.prototype.addGeneralOptions = function() {
+			Window_Options_prototype_addGeneralOptions.call(this);
+			this.addCommand("Enable Discord RPC", "useRPC", true);
+		};
+
+		const Window_Options_prototype_setConfigValue = Window_Options.prototype.setConfigValue;
+		Window_Options.prototype.setConfigValue = function(symbol, volume) {
+			Window_Options_prototype_setConfigValue.call(this, symbol, volume);
+			if (symbol == "useRPC") toggleRPC(volume, "settings");
+		};
+
+		const ConfigManager_makeData = ConfigManager.makeData;
+		ConfigManager.makeData = function() {
+			const config = ConfigManager_makeData.call(this);
+			config.useRPC = this.useRPC;
+			return config
+		}
+		
+		const ConfigManager_applyData = ConfigManager.applyData;
+		ConfigManager.applyData = function(config) {
+			ConfigManager_applyData.call(this, config);
+			this.useRPC = this.readFlag(config, "useRPC", true);
+		}
+	}
 
     function getButtons(parameters) {
         if (parameters['Enable button 1'] === "true") {
@@ -357,8 +414,14 @@ else {
     });
 
     let setPresence = function () {
+        if (isActivityDisabledFromSettings || isActivityDisabledFromCommand) {
+            client.clearActivity();
+            console.log("Discord RPC is disabled.");
+            return;
+        }
         let activity = createActivityObject(firstRow, secondRow);
         client.request('SET_ACTIVITY', activity);
+        console.log("Discord RPC is enabled.");
     };
 
     let deleteRow2 = function () {
@@ -423,5 +486,12 @@ else {
     PluginManager.registerCommand("ODUE_discord", 'Change small picture text', args => {
         smallPictureText = interpretText(String(args.newSmallPictureText));
         setPresence();
+    });
+
+    PluginManager.registerCommand("ODUE_discord", 'Toggle RPC', args => {
+        toggleRPC(args.State === "true", "command");
+        console.log("state: " + args.State);
+        console.log("isActivityDisabledFromSettings: " + isActivityDisabledFromSettings);
+        console.log("isActivityDisabledFromCommand: " + isActivityDisabledFromCommand);
     });
 }
